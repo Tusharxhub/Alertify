@@ -7,7 +7,7 @@ import { Providers } from "./providers";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Alertify - Anonymous Crime Reporting",
+  title: "Alertify",
   description: "Securely and anonymously report crimes to law enforcement",
 };
 
