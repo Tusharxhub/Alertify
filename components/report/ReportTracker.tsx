@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { Search, Loader } from "lucide-react";
 
 interface ReportDetails {
@@ -21,7 +20,6 @@ export function ReportTracker() {
   const [reportDetails, setReportDetails] = useState<ReportDetails | null>(
     null
   );
-  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,7 +28,7 @@ export function ReportTracker() {
     setLoading(true);
 
     if (!reportId.trim()) {
-      setError("Please enter a report ID");
+      setError("Please enter a valid report ID.");
       setLoading(false);
       return;
     }
@@ -38,12 +36,14 @@ export function ReportTracker() {
     try {
       const response = await fetch(`/api/reports/${reportId}/details`);
       if (!response.ok) {
-        throw new Error("Report not found");
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Report not found.");
       }
       const data = await response.json();
       setReportDetails(data);
     } catch (err) {
-      setError("Unable to find report. Please check the ID and try again.");
+      console.error("Error fetching report details:", err);
+      setError("Unable to find the report. Please check the ID and try again.");
     } finally {
       setLoading(false);
     }
@@ -64,7 +64,7 @@ export function ReportTracker() {
           </span>
         </h1>
         <p className="mt-4 text-zinc-400 max-w-xl mx-auto">
-          Enter your report ID to check the current status and updates
+          Enter your report ID to check the current status and updates.
         </p>
       </div>
 
@@ -102,11 +102,15 @@ export function ReportTracker() {
                            focus:ring-sky-500/50 focus:border-transparent transition-all"
                   placeholder="Enter your report ID"
                   disabled={loading}
+                  aria-label="Report ID"
                 />
               </div>
 
               {error && (
-                <div className="flex items-center gap-2 text-red-400 text-sm bg-red-500/10 p-4 rounded-xl border border-red-500/20">
+                <div
+                  className="flex items-center gap-2 text-red-400 text-sm bg-red-500/10 p-4 rounded-xl border border-red-500/20"
+                  role="alert"
+                >
                   <svg
                     className="h-5 w-5 flex-shrink-0"
                     fill="none"
@@ -132,6 +136,7 @@ export function ReportTracker() {
                          hover:to-blue-500 transition-all duration-200 
                          disabled:opacity-50 disabled:cursor-not-allowed
                          flex items-center justify-center space-x-2"
+                aria-busy={loading}
               >
                 {loading ? (
                   <Loader className="w-5 h-5 animate-spin" />
