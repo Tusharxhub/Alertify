@@ -115,12 +115,14 @@ export function ReportForm({ onComplete }: ReportFormProps) {
       const result = await response.json();
 
       if (!response.ok) {
+        console.error("API Error:", result.error || "Unknown error");
         throw new Error(result.error || "Failed to submit report");
       }
 
       onComplete(result);
     } catch (error) {
       console.error("Error submitting report:", error);
+      alert("Failed to submit the report. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
